@@ -1,6 +1,7 @@
 var fs = require('fs');
 var when = require('when');
 var callbacks = require('when/callbacks');
+var lint = require('jsonlint');
 
 /**
  * Read file async and to parse the content as JSON,
@@ -24,8 +25,9 @@ function readJSON(file, success, failure) {
 	});
 }
 
-// use "readJSON", whether succeed or not, log the file name that we read from
+// use "readJSON", in case of an syntax error on rejection, lint the file contents
 var file_to_read = "./sample.json";
-callbacks.call(readJSON, file_to_read).then(console.log).ensure(function () {
-	console.log("attempted to read file: %s", file_to_read);
+callbacks.call(readJSON, file_to_read).then(console.log)
+.catch(SyntaxError, function handleSyntaxError(err) {
+	lint.parse(fs.readFileSync(file_to_read, {encoding : 'utf8'}));
 });
