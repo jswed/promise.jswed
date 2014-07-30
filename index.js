@@ -1,4 +1,5 @@
 var fs = require('fs');
+var when = require('when');
 var callbacks = require('when/callbacks');
 
 /**
@@ -23,5 +24,8 @@ function readJSON(file, success, failure) {
 	});
 }
 
-// use "readJSON"
-callbacks.call(readJSON, "./sample.json").then(console.log);
+// use "readJSON", whether succeed or not, log the file name that we read from
+var file_to_read = "./sample.json";
+callbacks.call(readJSON, file_to_read).then(console.log).ensure(function () {
+	console.log("attempted to read file: %s", file_to_read);
+});
