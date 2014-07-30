@@ -22,7 +22,12 @@ function readJSON(file) {
 var p1 = readJSON("./sample.json");
 var p2 = readJSON("./sample2.json");
 
-// when.all([p1, p2])
-when.join(p1, p2).spread(function onBothSuccess(obj1, obj2) {
-	console.log(Object.assign(obj1, obj2));
-});
+// being fault tolerant at the JSON file that fails
+when.settle([p1, p2]).then(function onSettled(descriptors) {
+	return descriptors.reduce(function onDescriptor(sum, one) {
+		if (one.state !== 'rejected') {
+			Object.assign(sum, one.value);
+		}
+		return sum;
+	}, {});
+}).then(console.log);
