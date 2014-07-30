@@ -22,7 +22,5 @@ function readJSON(file) {
 var p1 = readJSON("./sample.json");
 var p2 = readJSON("./sample2.json");
 
-// when.all([p1, p2])
-when.join(p1, p2).spread(function onBothSuccess(obj1, obj2) {
-	console.log(Object.assign(obj1, obj2));
-});
+// a competitive race that the faster one wins
+when.any([p1.delay(100), p2]).then(console.log);
