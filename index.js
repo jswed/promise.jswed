@@ -24,8 +24,4 @@ function readJSON(file, success, failure) {
 }
 
 // use "readJSON"
-callbacks.call(readJSON, "./sample.json").then(function onSuccess(obj) {
-	console.log(obj);
-}).otherwise(function (err) {
-	console.error(err);
-});
+callbacks.call(readJSON, "./sample.json").then(console.log);
