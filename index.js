@@ -1,25 +1,31 @@
 var fs = require('fs');
-var when = require('when');
-var nodefn = require('when/node');
+var callbacks = require('when/callbacks');
 
 /**
  * Read file async and to parse the content as JSON,
- * return a promise when it succeed,
- * and reject if:
+ * invoke the first callback if succeed, invoke the second
+ * callback if:
  *  1. the file doesn't exist
  *  2. the file content is not valid JSON
  */
-function readJSON(file) {
-	return nodefn.call(fs.readFile, file, {
+function readJSON(file, success, failure) {
+	fs.readFile(file, {
 		encoding : 'utf8'
-	}).then(function (content) {
-		return JSON.parse(content);
+	}, function (err, content) {
+		if (err) {
+			failure(err);
+		}
+		try {
+			success(JSON.parse(content));
+		} catch (er) {
+			failure(er);
+		}
 	});
 }
 
-// consume "readJSON" with promise
-readJSON("./sample.json").then(function onSuccess(obj) {
+// use "readJSON"
+callbacks.call(readJSON, "./sample.json").then(function onSuccess(obj) {
 	console.log(obj);
-}).otherwise(function noFailure(err) {
+}).otherwise(function (err) {
 	console.error(err);
 });
